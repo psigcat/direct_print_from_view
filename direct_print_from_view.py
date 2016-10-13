@@ -26,7 +26,8 @@ import os.path
 # Import the utils file
 from utils import *
 # Import the dialog
-from ui.select_composer_dialog import SelectComposerDialog
+from ui.select_composer_dialog import Ui_SelectComposerDialog
+SelectComposerDialog = Ui_SelectComposerDialog # For some reason QtDesigner or pyuic4 adds the Ui_ at the start
 
 
 # Constants
@@ -70,7 +71,7 @@ class DirectPrintFromView:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&Direct Print From View')
+        self.menu = tr(u'&Direct Print From View')
         # TODO: We are going to let the user set this up in a future iteration
         self.toolbar = self.iface.addToolBar(u'DirectPrintFromView')
         self.toolbar.setObjectName(u'DirectPrintFromView')
@@ -158,7 +159,7 @@ class DirectPrintFromView:
         icon_path = ':/plugins/DirectPrintFromView/icon.png'
         self.add_action(
             icon_path,
-            text=self.tr(u'Print view'),
+            text=tr(u'Print view'),
             callback=self.run,
             parent=self.iface.mainWindow())
 
@@ -167,7 +168,7 @@ class DirectPrintFromView:
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginMenu(
-                self.tr(u'&Direct Print From View'),
+                tr(u'&Direct Print From View'),
                 action)
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
@@ -176,34 +177,47 @@ class DirectPrintFromView:
 
     def run(self):
         """Run method that performs all the real work"""
+        # Add all items (options)
+        # TODO
+
+        # Do we want to print (export otherwise)
+        printAction = False
+
+        # On print button click
+        def printClicked():
+            printAction = True # the only thing it actually does
+            self.dialog.accept()
+        # Connect function to slot
+        self.dialog.ui.print_btn.clicked.connect(printClicked)
+
         # Show dialog
         self.dialog.show()
 
         # Get the dialog result
         if self.dialog.exec_():
-            result = # TODO
-            centerAllCompositionMaps(result, iface.mapCanvas().center())
+            for result in self.dialog.ui.composer_list.selectedItems():
+                centerAllCompositionMaps(composition, iface.mapCanvas().center())
 
-            if imprimir: # TODO
-                printer = askPrinter()
-                if printer is not None:
-                    pass # TODO
-            else:
-                # Ask where to save the exported file
-                path = QFileDialog.getSaveFileName(
-                    dialog,
-                    None,
-                    os.path.join(
-                        self.settings.value(EXPORT_PATH, os.path.expanduser("~")),      #default folder
-                        refcat+"_"+dialog.ui.num_parcel_tbx.text()+".gml" #default filename
-                    ),
-                    "PDF (*.pdf)"
-                )
+                if printAction:
+                    printer = askPrinter()
+                    if printer is not None:
+                        pass # TODO
+                else:
+                    # Ask where to save the exported file
+                    path = QFileDialog.getSaveFileName(
+                        dialog,
+                        None,
+                        os.path.join(
+                            self.settings.value(EXPORT_PATH, os.path.expanduser("~")),      #default folder
+                            refcat+"_"+dialog.ui.num_parcel_tbx.text()+".gml" #default filename
+                        ),
+                        "PDF (*.pdf)"
+                    )
 
-                # If the path is not incorrect
-                if path != None and path != "":
-                    # Save the folder path in the settings for the next time
-                    self.settings.setValue(EXPORT_PATH, os.path.dirname(path))
+                    # If the path is not incorrect
+                    if path != None and path != "":
+                        # Save the folder path in the settings for the next time
+                        self.settings.setValue(EXPORT_PATH, os.path.dirname(path))
 
-                    # Finally export to PDF
-                    result.exportAsPDF(path)
+                        # Finally export to PDF
+                        composition.exportAsPDF(path)
