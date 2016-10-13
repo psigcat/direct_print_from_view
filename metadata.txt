@@ -1,0 +1,31 @@
+[general]
+name=Direct Print From View
+qgisMinimumVersion=2.0
+description=Print or export to a file, current map view using a composition.
+version=0.1
+author=Martí Angelats i Ribera, Carlos Lopez
+email=carlos.lopez@psig.es
+
+about=This plugin allows to print or export to a file the current view of the map by using a previously created composer (you can choose which if there are more than one). It supports multiple maps and does not change the scale in them.
+
+tracker=https://github.com/psigcat/direct_print_from_view/issues
+repository=https://github.com/psigcat/direct_print_from_view
+# End of mandatory metadata
+
+# Recommended items:
+
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=print, composer, export
+
+homepage=psig.es
+category=Plugins
+icon=icon.png
+# experimental flag
+experimental=False
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
