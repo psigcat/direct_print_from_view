@@ -66,22 +66,6 @@
  <resources/>
  <connections>
   <connection>
-   <sender>cancel_btn</sender>
-   <signal>clicked()</signal>
-   <receiver>SelectComposerDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>353</x>
-     <y>345</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>142</x>
-     <y>334</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>export_btn</sender>
    <signal>clicked()</signal>
    <receiver>SelectComposerDialog</receiver>
@@ -94,6 +78,22 @@
     <hint type="destinationlabel">
      <x>54</x>
      <y>351</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancel_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>SelectComposerDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>342</x>
+     <y>346</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>100</x>
+     <y>345</y>
     </hint>
    </hints>
   </connection>

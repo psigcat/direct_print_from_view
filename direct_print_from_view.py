@@ -20,14 +20,15 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
-from PyQt4.QtGui import QAction, QIcon
+from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication
+from PyQt4.QtGui import QAction, QIcon, QDialog, QFileDialog, QListWidgetItem
+from qgis.core import QgsProject
 import os.path
+import datetime
 # Import the utils file
 from utils import *
 # Import the dialog
 from ui.select_composer_dialog import Ui_SelectComposerDialog
-SelectComposerDialog = Ui_SelectComposerDialog # For some reason QtDesigner or pyuic4 adds the Ui_ at the start
 
 
 # Constants
@@ -50,6 +51,7 @@ class DirectPrintFromView:
 
         # Safe plugin directory
         self.plugin_dir = os.path.dirname(__file__)
+        self.icon = QIcon(os.path.join(self.plugin_dir, 'icon.png'))
 
         # Make settings (used to save preferences)
         self.settings = QSettings("PSIG", "direct_print_from_view")
@@ -69,155 +71,86 @@ class DirectPrintFromView:
                 QCoreApplication.installTranslator(self.translator)
 
 
-        # Declare instance attributes
-        self.actions = []
-        self.menu = tr(u'&Direct Print From View')
-        # TODO: We are going to let the user set this up in a future iteration
-        self.toolbar = self.iface.addToolBar(u'DirectPrintFromView')
-        self.toolbar.setObjectName(u'DirectPrintFromView')
-
-
-    def add_action(
-        self,
-        icon_path,
-        text,
-        callback,
-        enabled_flag=True,
-        add_to_menu=True,
-        add_to_toolbar=True,
-        status_tip=None,
-        whats_this=None,
-        parent=None):
-        """Add a toolbar icon to the toolbar.
-
-        :param icon_path: Path to the icon for this action. Can be a resource
-            path (e.g. ':/plugins/foo/bar.png') or a normal file system path.
-        :type icon_path: str
-
-        :param text: Text that should be shown in menu items for this action.
-        :type text: str
-
-        :param callback: Function to be called when the action is triggered.
-        :type callback: function
-
-        :param enabled_flag: A flag indicating if the action should be enabled
-            by default. Defaults to True.
-        :type enabled_flag: bool
-
-        :param add_to_menu: Flag indicating whether the action should also
-            be added to the menu. Defaults to True.
-        :type add_to_menu: bool
-
-        :param add_to_toolbar: Flag indicating whether the action should also
-            be added to the toolbar. Defaults to True.
-        :type add_to_toolbar: bool
-
-        :param status_tip: Optional text to show in a popup when mouse pointer
-            hovers over the action.
-        :type status_tip: str
-
-        :param parent: Parent widget for the new action. Defaults None.
-        :type parent: QWidget
-
-        :param whats_this: Optional text to show in the status bar when the
-            mouse pointer hovers over the action.
-
-        :returns: The action that was created. Note that the action is also
-            added to self.actions list.
-        :rtype: QAction
-        """
-
-        # Create the dialog (after translation) and keep reference
-        self.dialog = SelectComposerDialog()
-
-        icon = QIcon(icon_path)
-        action = QAction(icon, text, parent)
-        action.triggered.connect(callback)
-        action.setEnabled(enabled_flag)
-
-        if status_tip is not None:
-            action.setStatusTip(status_tip)
-
-        if whats_this is not None:
-            action.setWhatsThis(whats_this)
-
-        if add_to_toolbar:
-            self.toolbar.addAction(action)
-
-        if add_to_menu:
-            self.iface.addPluginToMenu(
-                self.menu,
-                action)
-
-        self.actions.append(action)
-
-        return action
-
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
+        self.dialog = QDialog(None, Qt.WindowSystemMenuHint | Qt.WindowTitleHint)
+        self.dialog.ui = Ui_SelectComposerDialog()
+        self.dialog.ui.setupUi(self.dialog)
 
-        icon_path = ':/plugins/DirectPrintFromView/icon.png'
-        self.add_action(
-            icon_path,
-            text=tr(u'Print view'),
-            callback=self.run,
-            parent=self.iface.mainWindow())
+        self.action = QAction(self.icon, tr("Print View"), self.iface.mainWindow())
+        self.action.triggered.connect(self.run)
+        self.iface.addToolBarIcon(self.action)
+        self.iface.addPluginToMenu(tr("Direct Print From View"), self.action)
+
 
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
-        for action in self.actions:
-            self.iface.removePluginMenu(
-                tr(u'&Direct Print From View'),
-                action)
-            self.iface.removeToolBarIcon(action)
-        # remove the toolbar
-        del self.toolbar
-
+        self.iface.removePluginMenu(tr("Direct Print From View"), self.action)
+        self.iface.removeToolBarIcon(self.action)
 
     def run(self):
         """Run method that performs all the real work"""
+        # If there is no project open
+        if not QgsProject.instance().title():
+            return
+
+        # Clear list (remove all elements)
+        self.dialog.ui.composer_list.clear()
         # Add all items (options)
-        # TODO
+        composers = self.iface.activeComposers()
+        for c in composers:
+            QListWidgetItem(c.composerWindow().windowTitle(), self.dialog.ui.composer_list)
 
-        # Do we want to print (export otherwise)
-        printAction = False
+        # Do we want to print? (export otherwise. False by default)
+        self.printAction = False
 
-        # On print button click
-        def printClicked():
-            printAction = True # the only thing it actually does
-            self.dialog.accept()
         # Connect function to slot
-        self.dialog.ui.print_btn.clicked.connect(printClicked)
+        self.dialog.ui.print_btn.clicked.connect(self.printClicked)
 
         # Show dialog
         self.dialog.show()
 
         # Get the dialog result
         if self.dialog.exec_():
-            for result in self.dialog.ui.composer_list.selectedItems():
-                centerAllCompositionMaps(composition, iface.mapCanvas().center())
+            # Aquire the desired composition
+            composer = composers[self.dialog.ui.composer_list.currentRow()]
+            composition = composer.composition()
 
-                if printAction:
-                    printer = askPrinter()
-                    if printer is not None:
-                        pass # TODO
-                else:
-                    # Ask where to save the exported file
-                    path = QFileDialog.getSaveFileName(
-                        dialog,
-                        None,
-                        os.path.join(
-                            self.settings.value(EXPORT_PATH, os.path.expanduser("~")),      #default folder
-                            refcat+"_"+dialog.ui.num_parcel_tbx.text()+".gml" #default filename
-                        ),
-                        "PDF (*.pdf)"
-                    )
+            # Center the maps
+            centerAllCompositionMaps(composition, self.iface.mapCanvas().center())
 
-                    # If the path is not incorrect
-                    if path != None and path != "":
-                        # Save the folder path in the settings for the next time
-                        self.settings.setValue(EXPORT_PATH, os.path.dirname(path))
+            # Print or export
+            if self.printAction:
+                # Get the printer
+                printer = askPrinter()
+                # Make sure it actually selected a printer
+                if printer is not None:
+                    pass # TODO
+            else:
+                # Ask where to save the exported file
 
-                        # Finally export to PDF
-                        composition.exportAsPDF(path)
+                path = QFileDialog.getSaveFileName(
+                    None,
+                    None,
+                    os.path.join(
+                        self.settings.value(EXPORT_PATH, os.path.expanduser("~")),      #default folder
+                        composer.composerWindow().windowTitle()+".pdf" #default filename
+                    ),
+                    "PDF (*.pdf)"
+                )
+
+                # If the path is not incorrect
+                if path != None and path != "":
+                    # Save the folder path in the settings for the next time
+                    self.settings.setValue(EXPORT_PATH, os.path.dirname(path))
+
+                    # Finally export to PDF
+                    composition.exportAsPDF(path)
+
+
+    # On print button click
+    def printClicked(self):
+        """Function which is called when the print button of the dialog is pressed."""
+        self.printAction = True # the only thing it actually does
+        self.dialog.accept()

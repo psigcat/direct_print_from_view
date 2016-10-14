@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'select_composer_dialog.ui'
 #
-# Created: Thu Oct 13 19:06:52 2016
+# Created: Fri Oct 14 12:21:28 2016
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -48,6 +48,8 @@ class Ui_SelectComposerDialog(object):
         self.verticalLayout.addLayout(self.horizontalLayout)
 
         self.retranslateUi(SelectComposerDialog)
+        QtCore.QObject.connect(self.export_btn, QtCore.SIGNAL(_fromUtf8("clicked()")), SelectComposerDialog.accept)
+        QtCore.QObject.connect(self.cancel_btn, QtCore.SIGNAL(_fromUtf8("clicked()")), SelectComposerDialog.reject)
         QtCore.QMetaObject.connectSlotsByName(SelectComposerDialog)
         SelectComposerDialog.setTabOrder(self.cancel_btn, self.composer_list)
         SelectComposerDialog.setTabOrder(self.composer_list, self.export_btn)
