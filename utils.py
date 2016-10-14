@@ -18,7 +18,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtGui import QApplication
+from PyQt4.QtGui import QApplication, QPrinter, QPrintDialog
 from qgis.core import QgsComposerMap
 def centerAllCompositionMaps(composition, center):
 	"""Centers any map in the composition to the required center without changing the scale.

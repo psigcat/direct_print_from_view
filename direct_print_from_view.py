@@ -126,7 +126,7 @@ class DirectPrintFromView:
                 printer = askPrinter()
                 # Make sure it actually selected a printer
                 if printer is not None:
-                    pass # TODO
+                    getattr(composition, 'print')(printer)
             else:
                 # Ask where to save the exported file
 
@@ -135,7 +135,7 @@ class DirectPrintFromView:
                     None,
                     os.path.join(
                         self.settings.value(EXPORT_PATH, os.path.expanduser("~")),      #default folder
-                        composer.composerWindow().windowTitle()+".pdf" #default filename
+                        ""
                     ),
                     "PDF (*.pdf)"
                 )
