@@ -146,8 +146,10 @@ class DirectPrintFromView:
                     # Save the folder path in the settings for the next time
                     self.settings.setValue(EXPORT_PATH, os.path.dirname(path))
 
-                    # Finally export to PDF
+                    # Export to PDF
                     composition.exportAsPDF(path)
+                    # And show the result using the default application
+                    openFile(path)
 
 
     # On print button click
