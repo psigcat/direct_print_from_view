@@ -76,6 +76,7 @@ class DirectPrintFromView:
         self.dialog = QDialog(None, Qt.WindowSystemMenuHint | Qt.WindowTitleHint)
         self.dialog.ui = Ui_SelectComposerDialog()
         self.dialog.ui.setupUi(self.dialog)
+        self.dialog.setWindowIcon(self.icon)
 
         self.action = QAction(self.icon, tr("Print View"), self.iface.mainWindow())
         self.action.triggered.connect(self.run)
@@ -123,7 +124,7 @@ class DirectPrintFromView:
             # Print or export
             if self.printAction:
                 # Get the printer
-                printer = askPrinter()
+                printer = askPrinter(self.icon)
                 # Make sure it actually selected a printer
                 if printer is not None:
                     getattr(composition, 'print')(printer)

@@ -63,12 +63,20 @@ def centerRect(rect, center):
 	return type(rect)(xMin, yMin, xMax, yMax)
 
 
-def askPrinter():
-	"""Returns a new object representing the selected printer. None if canceled."""
+def askPrinter(icon = None):
+	"""Returns a new object representing the selected printer. None if canceled.
+
+	:param icon: Printer dialog's icon.
+	:type icon: QIcon or NoneType
+	"""
 
 	# Show dialog
 	printer = QPrinter()
 	select = QPrintDialog(printer)
+
+	# Set the icon (if there is any)
+	if icon is not None:
+		select.setWindowIcon(icon)
 
 	# Return the result. None if canceled
 	if select.exec_():
