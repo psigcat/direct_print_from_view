@@ -61,7 +61,7 @@ class DirectPrintFromView:
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
-            'DirectPrintFromView_{}.qm'.format(locale))
+            'direct_print_from_view_{}.qm'.format(locale))
 
         if os.path.exists(locale_path):
             self.translator = QTranslator()

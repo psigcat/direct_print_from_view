@@ -111,4 +111,4 @@ def tr(text):
     :param text: Text to be translated.
     :type text: str or unicode
     """
-    return QApplication.translate("ficha_urbanistica", text)
+    return QApplication.translate("direct_print_from_view", text)
