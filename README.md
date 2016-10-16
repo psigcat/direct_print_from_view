@@ -1,5 +1,5 @@
 # Print directly from the view
-Plugin for QGIS to print composition directly from canvas (view). Choose a composition and print it o export it to PDF.
+Plugin for QGIS to print composition directly from canvas (view). Choose a composition and print it or export it to PDF.
 
 ## How to use it
  1. Center your view to where you want to print.
