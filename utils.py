@@ -22,6 +22,7 @@ from PyQt4.QtGui import QApplication, QPrinter, QPrintDialog
 from qgis.core import QgsComposerMap
 import os
 import sys
+import subprocess
 
 def openFile(path):
     """Opens a file with the default application.
