@@ -13,7 +13,7 @@
 		</message>
 		<message>
 			<source>Print View</source>
-			<translation>Imprimir Vista</translation>
+			<translation>Imprimieix Vista</translation>
 		</message>
 	</context>
 
@@ -22,19 +22,19 @@
 		<name>SelectComposerDialog</name>
 		<message>
 			<source>Select Composer</source>
-			<translation>Seleccionar Composer</translation>
+			<translation>Selecciona Composer</translation>
 		</message>
 		<message>
 			<source>Print</source>
-			<translation>Imprimir</translation>
+			<translation>Imprimieix</translation>
 		</message>
 		<message>
 			<source>Export to PDF</source>
-			<translation>Exportar a PDF</translation>
+			<translation>Exporta a PDF</translation>
 		</message>
 		<message>
 			<source>Cancel</source>
-			<translation>Cancelar</translation>
+			<translation>Cancel·la</translation>
 		</message>
 	</context>
 </TS>
