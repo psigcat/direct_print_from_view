@@ -20,22 +20,25 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication
-from PyQt4.QtGui import QAction, QIcon, QDialog, QFileDialog, QListWidgetItem
-from qgis.core import QgsProject
+from __future__ import absolute_import
+from builtins import object
+from qgis.PyQt.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication
+from qgis.PyQt.QtWidgets import QAction, QDialog, QFileDialog, QListWidget,QMessageBox
+from qgis.PyQt.QtGui import QIcon
+from qgis.core import QgsProject,QgsLayoutExporter
 import os.path
 import datetime
 # Import the utils file
-from utils import *
+from .utils import openFile,centerAllCompositionMaps,centerRect,askPrinter,tr
 # Import the dialog
-from ui.select_composer_dialog import Ui_SelectComposerDialog
+from .ui.select_composer_dialog import Ui_SelectComposerDialog
 
 
 # Constants
 EXPORT_PATH = 'export path'
 
 # Main class
-class DirectPrintFromView:
+class DirectPrintFromView(object):
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
@@ -99,9 +102,12 @@ class DirectPrintFromView:
         # Clear list (remove all elements)
         self.dialog.ui.composer_list.clear()
         # Add all items (options)
-        composers = self.iface.activeComposers()
-        for c in composers:
-            QListWidgetItem(c.composerWindow().windowTitle(), self.dialog.ui.composer_list)
+        projectInstance=QgsProject.instance()
+        
+        composers=projectInstance.layoutManager()
+
+        for c in composers.printLayouts():
+            self.dialog.ui.composer_list.addItem(c.name())
 
         # Do we want to print? (export otherwise. False by default)
         self.printAction = False
@@ -115,11 +121,10 @@ class DirectPrintFromView:
         # Get the dialog result
         if self.dialog.exec_():
             # Aquire the desired composition
-            composer = composers[self.dialog.ui.composer_list.currentRow()]
-            composition = composer.composition()
-
-            # Center the maps
+            
+            composition = composers.layouts()[self.dialog.ui.composer_list.currentRow()] #selected composer in the widjet
             centerAllCompositionMaps(composition, self.iface.mapCanvas().center())
+            composer=QgsLayoutExporter(composition)
 
             # Print or export
             if self.printAction:
@@ -127,11 +132,14 @@ class DirectPrintFromView:
                 printer = askPrinter(self.icon)
                 # Make sure it actually selected a printer
                 if printer is not None:
-                    getattr(composition, 'print')(printer)
+                    success = composer.print(printer, QgsLayoutExporter.PrintExportSettings())
+                    if success != 0:
+                        QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the layout."))
+                    
             else:
                 # Ask where to save the exported file
 
-                path = QFileDialog.getSaveFileName(
+                path, __ = QFileDialog.getSaveFileName(
                     None,
                     None,
                     os.path.join(
@@ -147,7 +155,7 @@ class DirectPrintFromView:
                     self.settings.setValue(EXPORT_PATH, os.path.dirname(path))
 
                     # Export to PDF
-                    composition.exportAsPDF(path)
+                    composer.exportToPdf(path,QgsLayoutExporter.PdfExportSettings() )
                     # And show the result using the default application
                     openFile(path)
 

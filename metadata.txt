@@ -1,15 +1,24 @@
+# This file contains metadata for your plugin. Since 
+# version 2.0 of QGIS this is the proper way to supply 
+# information about a plugin. The old method of 
+# embedding metadata in __init__.py will 
+# is no longer supported since version 2.0.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
 [general]
-name=Direct Print From View
-qgisMinimumVersion=2.0
-description=Print or export to a file (pdf), current map view using a composition.
+name=direct print from view
+
+qgisMinimumVersion=3.0
+description=nuse
 version=0.1
-author=Martí Angelats i Ribera, Carlos Lopez Quintanilla
-email=carlos.lopez@psig.es
+author=yo
+email=al@ic
 
-about=This plugin allows to print or export to a file (pdf) the current view of the map by using a previously created composer (you can choose which if there are more than one). It supports multiple compositions and does not change the scale in them.
+about=Provide a brief description of the plugin and its purpose.
 
-tracker=https://github.com/psigcat/direct_print_from_view/issues
-repository=https://github.com/psigcat/direct_print_from_view
+tracker=http://bugs
+repository=http://repo
 # End of mandatory metadata
 
 # Recommended items:
@@ -18,13 +27,13 @@ repository=https://github.com/psigcat/direct_print_from_view
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=print, composer, export
+tags=python
 
-homepage=psig.es
+homepage=http://homepage
 category=Plugins
 icon=icon.png
 # experimental flag
-experimental=False
+experimental=True
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False

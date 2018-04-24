@@ -18,8 +18,9 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtGui import QApplication, QPrinter, QPrintDialog
-from qgis.core import QgsComposerMap
+from qgis.PyQt.QtWidgets import QApplication,QDialog
+from qgis.PyQt.QtPrintSupport import QPrinter, QPrintDialog
+from qgis.core import QgsLayoutItemMap
 import os
 import sys
 import subprocess
@@ -49,13 +50,12 @@ def centerAllCompositionMaps(composition, center):
     :param center: Where to center the maps to.
     :type center: QgsPoint
     """
-
     # Iterate all items of the composition
-    for item in composition.items():
+    for item in list(composition.items()):
         # Only use the maps
-        if isinstance(item, QgsComposerMap):
+        if isinstance(item, QgsLayoutItemMap):
             # Center the view to center (without changing the scale)
-            item.setNewExtent(centerRect(item.extent(), center))
+            item.setExtent(centerRect(item, center))
 
 
 def centerRect(rect, center):
@@ -67,6 +67,8 @@ def centerRect(rect, center):
     :param center: The center of the translated rectangle.
     :type center: QgsPoint
     """
+    rect=rect.extent()
+    
     # Half the width and haf the height. Used later
     hw = rect.width() / 2
     hh = rect.height() / 2
@@ -95,14 +97,10 @@ def askPrinter(icon = None):
     select = QPrintDialog(printer)
 
     # Set the icon (if there is any)
-    if icon is not None:
-        select.setWindowIcon(icon)
-
-    # Return the result. None if canceled
-    if select.exec_():
-        return printer
+    if select.exec_()!= QDialog.Accepted:
+        return #no print
     else:
-        return None
+        return printer
 
 
 def tr(text):
