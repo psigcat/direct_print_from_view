@@ -10,15 +10,15 @@
 name=direct print from view
 
 qgisMinimumVersion=3.0
-description=nuse
+description=Print or export to a file (pdf), current map view using a composition.
 version=0.1
-author=yo
-email=al@ic
+author=Sergio Illera, Carlos López Quintanilla
+email=carlos.lopez@psig.es
 
-about=Provide a brief description of the plugin and its purpose.
+about=This plugin allows to print or export to a file (pdf) the current view of the map by using a previously created composer (you can choose which if there are more than one). It supports multiple compositions and does not change the scale in them.
 
-tracker=http://bugs
-repository=http://repo
+tracker=https://github.com/psigcat/direct_print_from_view/tree/python3-direct_print_from_view-1
+repository=https://github.com/psigcat/direct_print_from_view/tree/python3-direct_print_from_view-1
 # End of mandatory metadata
 
 # Recommended items:
@@ -29,11 +29,11 @@ repository=http://repo
 # Tags are comma separated with spaces allowed
 tags=python
 
-homepage=http://homepage
+homepage=https://github.com/psigcat/
 category=Plugins
 icon=icon.png
 # experimental flag
-experimental=True
+experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
